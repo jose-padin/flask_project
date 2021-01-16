@@ -1,34 +1,51 @@
+import unittest
+
 from flask import (
-    Flask,
+    flash,
     make_response,
     redirect,
     render_template,
-    request
+    request,
+    session,
+    url_for
 )
 from pprint import PrettyPrinter
+
+from app import create_app
+from app.forms import LoginForm
 
 
 print = PrettyPrinter(indent=4).pprint
 
-
-app = Flask(__name__)
+app = create_app()
 
 todos = ['TODO 1', 'TODO 2', 'TODO 3']
+
+
+@app.cli.command()
+def test():
+    tests = unittest.TestLoader().discover('tests')
+    unittest.TextTestRunner().run(tests)
 
 @app.route('/')
 def index():
     user_ip = request.remote_addr
     response = make_response(redirect('/hello'))  
-    response.set_cookie('user_ip', user_ip)
+
+    session['user_ip'] = user_ip
     return response
 
-@app.route('/hello')
+@app.route('/hello', methods=['GET'])
 def hello():
-    user_ip = request.cookies.get('user_ip')
+    user_ip = session.get('user_ip', None)
+    username = session.get('username', None)
+
     context={
         'user_ip': user_ip,
-        'todos': todos
+        'todos': todos,
+        'username': username
     }
+
     return render_template('hello.html', **context)
 
 @app.errorhandler(404)

@@ -4,7 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
+Flask = "*"
+Flask-WTF = "*"
+flask-bootstrap4 = "*"
+flask-testing = "*"
+blinker = "*"
 
 [dev-packages]
 

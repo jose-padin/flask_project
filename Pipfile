@@ -4,11 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Flask = "*"
-Flask-WTF = "*"
-flask-bootstrap4 = "*"
-flask-testing = "*"
 blinker = "*"
+firebase-admin = "*"
+Flask = "*"
+flask-bootstrap4 = "*"
+flask-login = "*"
+flask-testing = "*"
+Flask-WTF = "*"
 
 [dev-packages]
 

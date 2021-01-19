@@ -17,11 +17,13 @@ from app import create_app
 from app.firestore_service import (
     create_todo,
     delete_todo,
+    edit_todo,
     get_todos,
     get_users
 )
 from app.forms import (
     DeleteTodoForm,
+    EditTodoForm,
     LoginForm,
     TodoForm
 )
@@ -30,8 +32,6 @@ from app.forms import (
 print = PrettyPrinter(indent=4).pprint
 
 app = create_app()
-
-# todos = ['TODO 1', 'TODO 2', 'TODO 3']
 
 
 @app.cli.command()
@@ -52,15 +52,13 @@ def index():
 @app.route('/hello', methods=['GET'])
 @login_required
 def hello():
-    user_ip = session.get('user_ip')
-    username = current_user.id
-    delete_form = DeleteTodoForm()
 
     context={
-        'user_ip': user_ip,
-        'todos': get_todos(user_id=username),
-        'delete_form': delete_form,
-        'username': username
+        'delete_form': DeleteTodoForm(),
+        'edit_form': EditTodoForm(),
+        'todos': get_todos(user_id=current_user.id),
+        'username': current_user.id,
+        'user_ip': session.get('user_ip')
     }
 
     return render_template('hello.html', **context)
@@ -84,7 +82,16 @@ def add():
     return render_template('add_todo.html', **context)
 
 
-@app.route('/todos/delete/<todo_id>', methods=['POST'])
+@app.route('/todos/edit/<todo_id>/<done>', methods=['GET', 'POST'])
+def edit(todo_id, done):
+    done = True if done == 'True' else False
+    done = bool(done)
+    user_id = current_user.id
+    edit_todo(user_id=user_id, todo_id=todo_id, done=done)
+    return redirect(url_for('hello'))
+        
+
+@app.route('/todos/delete/<todo_id>', methods=['GET', 'POST'])
 def delete(todo_id):
     user_id = current_user.id
     delete_todo(user_id=user_id, todo_id=todo_id)

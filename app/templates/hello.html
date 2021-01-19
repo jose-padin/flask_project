@@ -43,11 +43,15 @@ Hello, world!
             <div class="col-4">
                 <ul class="list-group">
                     {% for todo in todos %}
-                        {{ macros.render_todo(todo) }}
+                        {{ macros.render_todo(todo, delete_form) }}
                     {% endfor %}
                 </ul>
             </div>
-            <div class="offset-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-4 mt-2">
+                <a href="{{ url_for('add') }}" class="btn btn-success">Add item</a>
+            </div>
         </div>
     </div>
 {% endblock %}

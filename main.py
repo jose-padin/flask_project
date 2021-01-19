@@ -14,8 +14,17 @@ from flask import (
 from flask_login import current_user, login_required
 
 from app import create_app
-from app.firestore_service import get_users, get_todos
-from app.forms import LoginForm
+from app.firestore_service import (
+    create_todo,
+    delete_todo,
+    get_todos,
+    get_users
+)
+from app.forms import (
+    DeleteTodoForm,
+    LoginForm,
+    TodoForm
+)
 
 
 print = PrettyPrinter(indent=4).pprint
@@ -45,14 +54,41 @@ def index():
 def hello():
     user_ip = session.get('user_ip')
     username = current_user.id
+    delete_form = DeleteTodoForm()
 
     context={
         'user_ip': user_ip,
         'todos': get_todos(user_id=username),
+        'delete_form': delete_form,
         'username': username
     }
 
     return render_template('hello.html', **context)
+
+
+@app.route('/add', methods=['GET', 'POST'])
+@login_required
+def add():
+    form = TodoForm()
+
+    context = {
+        'form': form
+    }
+    
+    username = session.get('username')
+
+    if request.method == 'POST':
+        create_todo(user_id=username, description=form.description.data)
+        return redirect(url_for('hello'))
+
+    return render_template('add_todo.html', **context)
+
+
+@app.route('/todos/delete/<todo_id>', methods=['POST'])
+def delete(todo_id):
+    user_id = current_user.id
+    delete_todo(user_id=user_id, todo_id=todo_id)
+    return redirect(url_for('hello'))
 
 
 # Error handlers

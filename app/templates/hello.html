@@ -43,7 +43,7 @@ Hello, world!
             <div class="col-4">
                 <ul class="list-group">
                     {% for todo in todos %}
-                        {{ macros.render_todo(todo, delete_form) }}
+                        {{ macros.render_todo(todo, delete_form, edit_form) }}
                     {% endfor %}
                 </ul>
             </div>
